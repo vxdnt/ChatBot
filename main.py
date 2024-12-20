@@ -38,8 +38,8 @@ def save_user_data(user_id):
                 logging.info(f"User data saved for user_id: {user_id}")
         except Exception as e:
             logging.error(f"Error saving user data for user_id {user_id}: {e}")
-            return jsonify({"reply": "There was an error saving your data. Please try again."})
-    #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+            #return jsonify({"reply": "There was an error saving your data. Please try again."})
+    return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
 
 
 # Helper functions for validation
