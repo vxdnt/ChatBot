@@ -41,15 +41,6 @@ def save_user_data(user_id):
             return jsonify({"reply": "There was an error saving your data. Please try again."})
     #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
 
-def send_completion_response(user_id):
-    """
-    Sends a completion response to the user and provides options to start a new chat.
-    """
-    return jsonify({
-        "reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.",
-        "options": ["Start New Chat"]
-    })
-
 
 # Helper functions for validation
 def is_valid_email(email):
@@ -141,7 +132,6 @@ def webhook():
         user_state[user_id]["email"] = user_message
         user_state[user_id]["step"] = 10  # Step 10: end_sell
         save_user_data(user_id)  # Save user data to MongoDB
-        return send_completion_response(user_id)
         #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
 
     # Buying Flow
@@ -168,7 +158,6 @@ def webhook():
         user_state[user_id]["email"] = user_message
         user_state[user_id]["step"] = 10  # Step 10: end_sell
         save_user_data(user_id)  # Save user data to MongoDB
-        return send_completion_response(user_id)
         #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
 
 
@@ -179,7 +168,7 @@ def webhook():
             user_state[user_id]["step"] = 2  # Step 2: options (skip greeting)
             return jsonify({"reply": "Hi!! Let me help you.", "options": ["Want to Sell", "Want to Buy"]})
 
-    return jsonify({"reply": "Opps! Looks like an error occurred, please open the website in a new tab."})
+    return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
