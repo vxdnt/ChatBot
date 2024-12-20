@@ -16,7 +16,8 @@ logging.basicConfig(level=logging.INFO)
 uri = "mongodb+srv://vedant:happypeople@sortmyentries01.1qm2a.mongodb.net/?retryWrites=true&w=majority&appName=sortmyentries01"
 
 # Create a new client and connect to the server
-client = pymongo.MongoClient(uri, server_api=pymongo.server_api.ServerApi(version="1", strict=True))
+client = pymongo.MongoClient(uri, tlsDisableOCSPEndpointCheck=True)
+
 
 try:
     client.admin.command('ping')  # Test the connection
