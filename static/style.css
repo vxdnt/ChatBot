@@ -1,0 +1,211 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+.chat-container {
+    width: 450px; /* Larger chatbox */
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex; /* Flexbox for layout */
+    justify-content: space-between; /* Space between h1 and icons */
+    align-items: center; /* Center items vertically */
+    padding: 10px 20px; /* Padding for spacing */
+    background-color: #fff; /* Same as container */
+    border-bottom: 1px solid #ddd;
+}
+
+.header h1 {
+    margin: 0; /* Remove default margin */
+    font-size: 1.2rem; /* Adjust size */
+    color: #000; /* Title color */
+}
+
+.header p{
+    color: #29f300;
+    background-color: #000;
+    border-radius: 5px;
+    font-size: 10px;
+    padding: 5px;
+}
+
+.left-icons {
+    display: flex; /* Flex layout for icons */
+    gap: 10px; /* Space between icons */
+}
+
+.report-issue {
+    margin: 0; /* Reset margin for proper alignment */
+    color: #000000;
+    font-size: 1.2rem; /* Adjust size as needed */
+    text-decoration: none;
+    vertical-align: middle;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 27px; /* Circle diameter */
+    height: 27px; /* Circle diameter */
+    border-radius: 50%; /* Makes it a circle */
+    border: 2px solid #000000; /* Optional border */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow */
+}
+
+.chatbox {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    border-bottom: 1px solid #ddd;
+    height: 350px; /* Increased height */
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.option-btn {
+    margin: 8px 0;
+    padding: 12px;
+    background-color: #000; /* Black background for buttons */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+}
+
+.option-btn:hover {
+    background-color: #252525; /* Dark gray on hover */
+}
+
+.input-container {
+    display: flex;
+    padding: 10px;
+}
+
+#userInput {
+    flex-grow: 1;
+    padding: 12px;
+    border: 2px solid #000000;
+    border-radius: 8px 0 0 8px;
+    font-size: 16px; /* Larger text */
+    outline: none;
+}
+
+#sendButton {
+    padding: 12px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#sendButton:hover {
+    background-color: #252525;
+}
+
+/* Hide input field and button at the end */
+.hidden {
+    display: none;
+}
+
+
+.share-popup {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1000;
+  }
+  
+  .share-popup a, .share-popup button {
+    text-decoration: none;
+    color: black;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .share-popup a:hover, .share-popup button:hover {
+    color: #007bff;
+  }
+  
+  .share-popup a i, .share-popup button i {
+    margin-right: 8px;
+  }
+  
+  .hidden {
+    display: none;
+  }
+
+  .intro-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(0, 0, 0);
+    z-index: 9999;
+    opacity: 1;
+    color: #fff;
+    transition: opacity 1s ease-out;
+  }
+  
+  .logo {
+    width: 100px; /* Adjust as needed */
+    height: auto;
+  }
+  
+  /* Fade-in animation for the logo */
+  .intro-screen img, h4 {
+    animation: fadeIn 1s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  /* When the intro screen fades out */
+  .intro-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  /* Show the main content */
+  .chat-container {
+    display: block;
+  }
