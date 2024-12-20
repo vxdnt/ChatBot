@@ -17,6 +17,12 @@ uri = "mongodb+srv://vedant:happypeople@sortmyentries01.1qm2a.mongodb.net/?retry
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
 
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
+
 # MongoDB connection
 db = client["ticket_reselling"]
 user_collection = db["users"]  # Collection to store user data
