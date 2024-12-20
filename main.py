@@ -39,6 +39,8 @@ def save_user_data(user_id):
         except Exception as e:
             logging.error(f"Error saving user data for user_id {user_id}: {e}")
             return jsonify({"reply": "There was an error saving your data. Please try again."})
+    return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+
 
 
 # Helper functions for validation
@@ -131,7 +133,7 @@ def webhook():
         user_state[user_id]["email"] = user_message
         user_state[user_id]["step"] = 10  # Step 10: end_sell
         save_user_data(user_id)  # Save user data to MongoDB
-        return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+        #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
 
     # Buying Flow
     elif step == 4:  # Ask event for buying
@@ -157,7 +159,7 @@ def webhook():
         user_state[user_id]["email"] = user_message
         user_state[user_id]["step"] = 10  # Step 10: end_sell
         save_user_data(user_id)  # Save user data to MongoDB
-        return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+        #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
 
 
 
