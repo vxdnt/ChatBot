@@ -4,6 +4,7 @@ import logging
 from pymongo import MongoClient
 from threading import Timer
 from pymongo import ReturnDocument
+from pymongo.server_api import ServerApi
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -11,10 +12,16 @@ app = Flask(__name__)
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
+uri = "mongodb+srv://vedant:happypeople@sortmyentries01.1qm2a.mongodb.net/?retryWrites=true&w=majority&appName=sortmyentries01"
+
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+
 # MongoDB connection
-client = MongoClient("mongodb+srv://vedant:happypeople@sortmyentries01.1qm2a.mongodb.net/?retryWrites=true&w=majority&appName=sortmyentries01")
 db = client["ticket_reselling"]
 user_collection = db["users"]  # Collection to store user data
+
+
 
 # Store user state (basic in-memory)
 user_state = {}
