@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify, render_template
-import re
+import re 
 import logging
-from pymongo import MongoClient
+import pymongo
 from threading import Timer
 from pymongo import ReturnDocument
+from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 # Initialize Flask app
@@ -13,10 +14,8 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 uri = "mongodb+srv://vedant:happypeople@sortmyentries01.1qm2a.mongodb.net/?retryWrites=true&w=majority&appName=sortmyentries01"
-
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
-
 try:
     client.admin.command('ping')
     logging.info("Pinged your deployment. You successfully connected to MongoDB!")
@@ -26,8 +25,6 @@ except Exception as e:
 # MongoDB connection
 db = client["ticket_reselling"]
 user_collection = db["users"]  # Collection to store user data
-
-
 
 # Store user state (basic in-memory)
 user_state = {}
