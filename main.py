@@ -12,35 +12,33 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 # MongoDB connection
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://vedant:happypeople@sortmyentries01.1qm2a.mongodb.net/?retryWrites=true&w=majority&appName=sortmyentries01")
 db = client["ticket_reselling"]
 user_collection = db["users"]  # Collection to store user data
 
 # Store user state (basic in-memory)
 user_state = {}
 
-def save_user_data(user_data):
-    # Check if user with the same _id exists
-    existing_user = user_collection.find_one({'_id': user_data['_id']})
+def save_user_data(user_id):
     user_data = user_state.get(user_id, {})
     if user_data:
+        existing_user = user_collection.find_one({'_id': user_id})
         try:
-            user_collection.insert_one(user_data)
-            logging.info(f"User data saved for user_id: {user_id}")
+            if existing_user:
+                # Update the existing user
+                user_collection.find_one_and_update(
+                    {'_id': user_id},
+                    {'$set': user_data},
+                    return_document=ReturnDocument.AFTER
+                )
+                logging.info(f"User data updated for user_id: {user_id}")
+            else:
+                # Insert new user data
+                user_collection.insert_one(user_data)
+                logging.info(f"User data saved for user_id: {user_id}")
         except Exception as e:
             logging.error(f"Error saving user data for user_id {user_id}: {e}")
             return jsonify({"reply": "There was an error saving your data. Please try again."})
-    
-    if existing_user:
-        # Optionally, update the existing user
-        user_collection.find_one_and_update(
-            {'_id': user_data['_id']},
-            {'$set': user_data},
-            return_document=ReturnDocument.AFTER
-        )
-    else:
-        # Insert new user data if no document exists with the same _id
-        user_collection.insert_one(user_data)
 
 
 # Helper functions for validation
@@ -54,14 +52,6 @@ def clear_user_state(user_id):
     """Clears user state after inactivity or session end."""
     user_state.pop(user_id, None)
     logging.info(f"Cleared state for user_id: {user_id}")
-
-# Save user data to MongoDB
-def save_user_data(user_id):
-    user_data = user_state.get(user_id, {})
-    if user_data:
-        # Insert data into MongoDB
-        user_collection.insert_one(user_data)
-        logging.info(f"User data saved for user_id: {user_id}")
 
 @app.route("/")
 def home():
@@ -178,8 +168,6 @@ def webhook():
             return jsonify({"reply": "Hi!! Let me help you.", "options": ["Want to Sell", "Want to Buy"]})
 
     return jsonify({"reply": "Opps! Looks like an error occurred, please open the website in a new tab."})
-
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
