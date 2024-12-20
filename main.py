@@ -14,13 +14,15 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 uri = "mongodb+srv://vedant:happypeople@sortmyentries01.1qm2a.mongodb.net/?retryWrites=true&w=majority&appName=sortmyentries01"
+
 # Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'), tls=True)
+client = pymongo.MongoClient(uri, server_api=pymongo.server_api.ServerApi(version="1", strict=True))
+
 try:
-    client.admin.command('ping')
+    client.admin.command('ping')  # Test the connection
     logging.info("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
-    print(e)
+    print(f"Error: {e}")
 
 # MongoDB connection
 db = client["ticket_reselling"]
