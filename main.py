@@ -69,7 +69,12 @@ def clear_user_state(user_id):
 
 @app.route("/")
 def home():
+    refresh()
     return render_template("index.html")
+
+def refresh():
+    global user_state
+    user_state = {}
 
 @app.route("/restart", methods=["GET"])
 def restart():
