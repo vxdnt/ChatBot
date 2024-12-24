@@ -38,6 +38,11 @@ function displayOptions(options) {
 
 }
 
+// Function to generate or retrieve a random user_id
+function getUserId() {
+    return Math.random().toString(36).substring(2, 15); // New ID every time
+}
+
 // Function to send the user's message to the server and handle the response
 function sendMessage(userMessage) {
     const chatbox = document.getElementById('chatbox');
@@ -47,10 +52,12 @@ function sendMessage(userMessage) {
     const optionsContainer = document.getElementById('optionsContainer');
     optionsContainer.innerHTML = '';
 
+    const userId = getUserId();
+
     fetch('/webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: "12345", message: userMessage })
+        body: JSON.stringify({ user_id: userId, message: userMessage })
     })
     .then(response => response.json())
     .then(data => {
