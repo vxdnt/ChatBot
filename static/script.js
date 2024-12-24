@@ -38,11 +38,6 @@ function displayOptions(options) {
 
 }
 
-// Function to generate or retrieve a random user_id
-function getUserId() {
-    return Math.random().toString(36).substring(2, 15); // New ID every time
-}
-
 // Function to send the user's message to the server and handle the response
 function sendMessage(userMessage) {
     const chatbox = document.getElementById('chatbox');
@@ -52,12 +47,10 @@ function sendMessage(userMessage) {
     const optionsContainer = document.getElementById('optionsContainer');
     optionsContainer.innerHTML = '';
 
-    const userId = getUserId();
-
     fetch('/webhook', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, message: userMessage })
+        body: JSON.stringify({ user_id: "12345", message: userMessage })
     })
     .then(response => response.json())
     .then(data => {
@@ -144,7 +137,7 @@ document.getElementById('terms-icon').addEventListener('click', (event) => {
                 <h4>Terms & Conditions</h4>
 
                 <p style="font-size: 0.8rem;">Welcome to Sortmyentries! By using our services, you agree to these Terms and Conditions, which govern the use of our platform. Sortmyentries serves as an offline ticketing partner, facilitating connections between buyers and sellers of event tickets. We operate strictly as a connector and are not responsible for transactions or the outcomes of deals between the parties. We prioritize official offline promoters to create a secure and reliable environment for event ticketing.</p>
-                <p style="font-size: 0.8rem;">Sortmyentries provides a platform where sellers can list their tickets for a nominal fee, and buyers can connect with sellers directly to inquire about available tickets. <strong>In future, we are going to monetize this platform where sellers need to pay for listing their tickets on our platform</strong>. Buyers, on the other hand, can access the platform and connect with sellers free of charge. The details of the events and contact information of the parties are shared through our platform, but the transactions and agreements between buyers and sellers are managed independently without any involvement from Sortmyentries.</p>
+                <p style="font-size: 0.8rem;">Sortmyentries provides a platform where sellers can list their tickets for a nominal fee, and buyers can connect with sellers directly to inquire about available tickets. <strong>Sellers are required to pay ₹5 per ticket listing</strong>, while <strong>promoters can list their events and sort entries for ₹50 per event</strong>. Buyers, on the other hand, can access the platform and connect with sellers free of charge. The details of the events and contact information of the parties are shared through our platform, but the transactions and agreements between buyers and sellers are managed independently without any involvement from Sortmyentries.</p>
                 <p style="font-size: 0.8rem;"><strong>We do not require account creation</strong> on our platform. All interactions are conducted through the direct exchange of information facilitated by our team. Sellers are responsible for providing accurate and complete details about their tickets, while buyers must verify ticket details and coordinate arrangements directly with sellers. Promoters who use our services are required to ensure their listings are authentic and comply with all applicable laws. We emphasize the importance of engaging with <strong>official offline promoters</strong> to minimize fraudulent activities and maintain the integrity of the platform.</p>
                 <p style="font-size: 0.8rem;">Sortmyentries collects data such as names, mobile numbers, email addresses, event preferences, and other relevant information to facilitate connections between buyers and sellers. We handle this data responsibly and only use it for the purpose of ticketing facilitation. <strong>We do not share user information with third parties</strong> except as necessary to establish connections between buyers and sellers.</p>
                 <p style="font-size: 0.8rem;"><strong>It is essential to note that Sortmyentries is not involved in the financial transactions or delivery of tickets.</strong> We do not verify the authenticity of tickets or mediate disputes between parties. Our role is limited to providing a platform for communication. Buyers and sellers are solely responsible for ensuring the accuracy of the information they provide and for fulfilling their obligations in any ticket transaction.</p>
