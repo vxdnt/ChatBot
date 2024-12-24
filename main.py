@@ -102,7 +102,7 @@ def webhook():
         if "sell" in user_message:
             user_state[user_id]["step"] = 3  # Step 3: ask_event_sell
             return jsonify({"reply": "Great! You want to sell. Tell me which event it is?"})
-        elif:
+        else:
             user_state[user_id]["step"] = 4  # Step 4: ask_event_buy
             return jsonify({"reply": "Great! You want to buy. Tell me which event you’re interested in?"})
 
