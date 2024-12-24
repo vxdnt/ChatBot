@@ -131,12 +131,13 @@ body {
     position: absolute;
     display: flex;
     flex-direction: column;
-    background: white;
+    background: rgb(255, 255, 255);
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 10px;
     z-index: 1000;
+    transform: translateX(-90%);
   }
   
   .share-popup a, .share-popup button {
@@ -150,7 +151,7 @@ body {
     cursor: pointer;
     font-size: 16px;
   }
-  
+
   .share-popup a:hover, .share-popup button:hover {
     color: #007bff;
   }
@@ -209,3 +210,16 @@ body {
   .chat-container {
     display: block;
   }
+
+@media (max-width: 550px) {
+    .chat-container {
+        width: 350px;
+    }
+    .header h1, p{
+      font-size: 0.8rem;
+    }
+    
+    .share-popup button{
+      font-size: 0.9rem;
+    }
+}
