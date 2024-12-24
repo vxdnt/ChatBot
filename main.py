@@ -85,7 +85,11 @@ def webhook():
     data = request.json
     characters = string.ascii_letters + string.digits
     # Generate a secure random string of the specified length
-    user_id = ''.join(secrets.choice(characters) for _ in range(6))
+    random_id = ''.join(secrets.choice(characters) for _ in range(10))
+    if random_id not in user_state:
+        user_id = random_id
+    else:
+        return webhook()
     user_message = data.get("message", "").lower()
 
     if not user_id:
