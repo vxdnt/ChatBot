@@ -98,13 +98,13 @@ def webhook():
         Timer(600, clear_user_state, args=[user_id]).start()  # Clear state after 10 minutes
         return jsonify({"reply": "Hi!! Let me help you.", "options": ["Want to Sell", "Want to Buy"]})
 
-    elif step == 2:  # Options
-        if "sell" in user_message:
-            user_state[user_id]["step"] = 3  # Step 3: ask_event_sell
-            return jsonify({"reply": "Great! You want to sell. Tell me which event it is?"})
-        else:
-            user_state[user_id]["step"] = 4  # Step 4: ask_event_buy
-            return jsonify({"reply": "Great! You want to buy. Tell me which event you’re interested in?"})
+    elif "sell" in user_message:  # Options
+        user_state[user_id]["step"] = 3  # Step 3: ask_event_sell
+        return jsonify({"reply": "Great! You want to sell. Tell me which event it is?"})
+    
+    elif "buy" in user_message:
+        user_state[user_id]["step"] = 4  # Step 4: ask_event_buy
+        return jsonify({"reply": "Great! You want to buy. Tell me which event you’re interested in?"})
 
     # Selling Flow
     elif step == 3:  # Ask event for selling
