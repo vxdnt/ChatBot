@@ -86,9 +86,10 @@ def webhook():
     if not user_id:
         return jsonify({"reply": "Invalid user ID."}), 400
 
-    user_state[user_id] = {"step": 1}
-    user_state[user_id]["step"] = 2  # Step 1: greeting
-    logging.info(f"New session started for user_id: {user_id}")
+    if user_id not in user_state:
+        user_state[user_id] = {"step": 1}
+        user_state[user_id]["step"] = 2  # Step 1: greeting
+        logging.info(f"New session started for user_id: {user_id}")
 
     # Handling each step based on user state
     step = user_state[user_id]["step"]
