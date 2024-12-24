@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, render_template
 import re 
 import logging
 import pymongo
+import uuid
+import logging
 from threading import Timer
 from pymongo import ReturnDocument
 from pymongo.mongo_client import MongoClient
@@ -80,11 +82,8 @@ def restart():
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.json
-    user_id = data.get("user_id")
+    user_id = str(uuid.uuid4())
     user_message = data.get("message", "").lower()
-
-    if not user_id:
-        return jsonify({"reply": "Invalid user ID."}), 400
 
     if user_id not in user_state:
         user_state[user_id] = {"step": 1}
