@@ -75,13 +75,10 @@ def home():
 def restart():
     global user_state
     user_state = {}
-    return webhook(start_step=1)
+    return webhook()
 
 @app.route("/webhook", methods=["POST"])
-def webhook(start_step = None):
-
-    global user_state
-
+def webhook():
     data = request.json
     user_id = data.get("user_id")
     user_message = data.get("message", "").lower()
@@ -89,14 +86,13 @@ def webhook(start_step = None):
     if not user_id:
         return jsonify({"reply": "Invalid user ID."}), 400
 
-    # Initialize or clear user state when the session starts fresh
     if user_id not in user_state:
-        user_state[user_id] = {"step": start_step or 1}
+        user_state[user_id] = {"step": 1}
+        user_state[user_id]["step"] = 2  # Step 1: greeting
         logging.info(f"New session started for user_id: {user_id}")
 
-    # Get current step
+    # Handling each step based on user state
     step = user_state[user_id]["step"]
-
 
     if step == 1:  # Greeting
         user_state[user_id]["step"] = 2  # Step 2: options
