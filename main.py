@@ -2,12 +2,11 @@ from flask import Flask, request, jsonify, render_template
 import re 
 import logging
 import pymongo
-import uuid
-import logging
 from threading import Timer
 from pymongo import ReturnDocument
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+import uuid
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -85,6 +84,7 @@ def webhook():
     user_id = str(uuid.uuid4())
     user_message = data.get("message", "").lower()
 
+    
     if user_id not in user_state:
         user_state[user_id] = {"step": 1}
         user_state[user_id]["step"] = 2  # Step 1: greeting
@@ -101,13 +101,12 @@ def webhook():
     elif step == 2:  # Options
         if "sell" in user_message:
             user_state[user_id]["step"] = 3  # Step 3: ask_event_sell
-            reply = "Great! You want to sell. Tell me which event it is?"
+            return jsonify({"reply": "Great! You want to sell. Tell me which event it is?"})
         elif "buy" in user_message:
             user_state[user_id]["step"] = 4  # Step 4: ask_event_buy
-            reply = "Great! You want to buy. Tell me which event you’re interested in?"
+            return jsonify({"reply": "Great! You want to buy. Tell me which event you’re interested in?"})
         else:
-            reply = "Please select an option: Want to Sell or Want to Buy."
-        return jsonify({"reply": reply})
+            return jsonify({"reply": "Please select an option: Want to Sell or Want to Buy."})
 
     # Selling Flow
     elif step == 3:  # Ask event for selling
