@@ -6,9 +6,6 @@ from threading import Timer
 from pymongo import ReturnDocument
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-import random
-import secrets
-import string
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -83,13 +80,7 @@ def restart():
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.json
-    characters = string.ascii_letters + string.digits
-    # Generate a secure random string of the specified length
-    random_id = ''.join(secrets.choice(characters) for _ in range(10))
-    if random_id not in user_state:
-        user_id = random_id
-    else:
-        return webhook()
+    user_id = data.get("user_id")
     user_message = data.get("message", "").lower()
 
     if not user_id:
