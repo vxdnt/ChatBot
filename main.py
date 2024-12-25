@@ -6,9 +6,14 @@ from threading import Timer
 from pymongo import ReturnDocument
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from flask import send_from_directory
 
 # Initialize Flask app
 app = Flask(__name__)
+
+@app.route('/ads.txt')
+def ads_txt():
+    return send_from_directory('.', 'ads.txt')
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
