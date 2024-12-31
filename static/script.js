@@ -25,6 +25,33 @@ function displayOptions(options) {
         restartButton.className = 'option-btn';
         restartButton.onclick = () => startNewChat();
         optionsContainer.appendChild(restartButton);
+    }else if (options.includes('Pay 20')) {
+        const paybutton = document.createElement('button');
+        paybutton.textContent = 'Pay 20';
+        paybutton.className = 'option-btn';
+        paybutton.onclick = async () => {
+            try {
+                // Make a POST request to the /pay endpoint
+                const response = await fetch('https://www.sortmyentries.in/pay', {  // Use your server URL
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                // Handle the response
+                const data = await response.json();
+                if (response.ok) {
+                    alert("Payment successful!");
+                } else {
+                    alert(`Error: ${data.message}`);
+                }
+            } catch (error) {
+                console.error("Error executing payment:", error);
+                alert("There was an issue processing the payment.");
+            }
+        };
+        optionsContainer.appendChild(paybutton);
     } else {
         // Create buttons for other options
         options.forEach(option => {
