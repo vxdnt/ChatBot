@@ -77,6 +77,10 @@ def home():
     refresh()
     return render_template("index.html")
 
+@app.route('/success')
+def success():
+    return render_template('success.html')
+
 def refresh():
     global user_state
     user_state = {}
