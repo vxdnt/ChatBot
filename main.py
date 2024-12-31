@@ -106,7 +106,7 @@ def run_payment():
     "link_notify": {
         "send_sms": True
     },
-    "link_amount": 20,
+    "link_amount": 5,
     "link_purpose": "List My Tickets",
     "link_currency": "INR",
     "link_id": link_id  # Use the generated random link_id
