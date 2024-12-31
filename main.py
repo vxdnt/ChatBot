@@ -7,6 +7,11 @@ from pymongo import ReturnDocument
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from flask import send_from_directory
+import requests
+import os
+import uuid  # To generate a random UUID for link_id
+import webbrowser  # To open the URL in the default web browser
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -80,6 +85,50 @@ def home():
 @app.route('/success')
 def success():
     return render_template('success.html')
+
+@app.route('/pay', methods=['POST'])
+def run_payment():
+    client_id = os.getenv("X_CLIENT_ID")
+    client_secret = os.getenv("X_CLIENT_SECRET")
+    url = 'https://api.cashfree.com/pg/links'
+    headers = {
+    'accept': 'application/json',
+    'content-type': 'application/json',
+    'x-api-version': '2023-08-01',
+    'x-client-id': client_id,
+    'x-client-secret': client_secret
+    }
+    link_id = str(uuid.uuid4())
+    data = {
+    "customer_details": {
+        "customer_phone": "7715039001"
+    },
+    "link_notify": {
+        "send_sms": True
+    },
+    "link_amount": 20,
+    "link_purpose": "List My Tickets",
+    "link_currency": "INR",
+    "link_id": link_id  # Use the generated random link_id
+    }
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        print("Request was successful")
+        print(response.json())  # Print the response JSON
+
+    # Assuming the response contains a URL or link to open
+    # For example, if the response contains a field like 'link_url', we use it to open in the browser
+    # Make sure to check the actual response from Cashfree API for the link URL
+        link_url = response.json().get('link_url')  # Update this with the actual field name in response
+    
+        if link_url:
+            webbrowser.open(link_url)  # Open the URL in the default web browser
+        else:
+            print("No link URL found in the response.")
+    else:
+        print(f"Request failed with status code {response.status_code}")
+        print(response.text)
+
 
 def refresh():
     global user_state
@@ -157,17 +206,21 @@ def webhook():
         if not is_valid_email(user_message):
             return jsonify({"reply": "That doesn’t look like a valid email. Please try again."})
         user_state[user_id]["email"] = user_message
-        user_state[user_id]["step"] = 10  # Step 10: end_sell
+        user_state[user_id]["step"] = 30  # Step 10: end_sell
 
         try:
             save_user_data(user_id)  # Save user data to MongoDB
         except Exception as e:
             logging.error(f"Error saving user data: {e}")
             return jsonify({"reply": "There was an error saving your data. Please try again."}), 500
-        return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+        return jsonify({"reply": "Please do the payment to list your tickets on our platform", "options": ["Pay 20"]})
 
         #save_user_data(user_id)  # Save user data to MongoDB
         #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+    elif step == 30:  # Ask event for selling
+        user_state[user_id]["event"] = user_message
+        user_state[user_id]["step"] = 2  # Step 5: ask_category_sell
+        return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})  
 
     # Buying Flow
     elif step == 4:  # Ask event for buying
