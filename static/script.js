@@ -43,6 +43,7 @@ function displayOptions(options) {
                 const data = await response.json();
                 if (response.ok) {
                     alert("Payment successful!");
+                    window.location.href = "https://www.sortmyentries.in/success";
                 } else {
                     alert(`Error: ${data.message}`);
                 }
