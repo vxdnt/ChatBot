@@ -93,42 +93,44 @@ def run_payment():
     client_secret = os.getenv("X_CLIENT_SECRET")
     url = 'https://api.cashfree.com/pg/links'
     headers = {
-    'accept': 'application/json',
-    'content-type': 'application/json',
-    'x-api-version': '2023-08-01',
-    'x-client-id': client_id,
-    'x-client-secret': client_secret
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'x-api-version': '2023-08-01',
+        'x-client-id': client_id,
+        'x-client-secret': client_secret
     }
     link_id = str(uuid.uuid4())
     data = {
-    "customer_details": {
-        "customer_phone": "7715039001"
-    },
-    "link_notify": {
-        "send_sms": True
-    },
-    "link_amount": 5,
-    "link_purpose": "List My Tickets",
-    "link_currency": "INR",
-    "link_id": link_id  # Use the generated random link_id
+        "customer_details": {
+            "customer_phone": "7715039001"
+        },
+        "link_notify": {
+            "send_sms": True
+        },
+        "link_amount": 5,
+        "link_purpose": "List My Tickets",
+        "link_currency": "INR",
+        "link_id": link_id  # Use the generated random link_id
     }
+
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
         print("Request was successful")
-        print(response.json())  # Print the response JSON
+        response_data = response.json()
+        link_url = response_data.get('link_url')  # Update this with the actual field name in the response
 
-    # Assuming the response contains a URL or link to open
-    # For example, if the response contains a field like 'link_url', we use it to open in the browser
-    # Make sure to check the actual response from Cashfree API for the link URL
-        link_url = response.json().get('link_url')  # Update this with the actual field name in response
-    
         if link_url:
-            webbrowser.open(link_url)  # Open the URL in the default web browser
+            # Open the URL in the default web browser
+            webbrowser.open(link_url)
+            # Return the link URL as a response to the request
+            return jsonify({"link_url": link_url}), 200
         else:
             print("No link URL found in the response.")
+            return jsonify({"error": "No link URL found in the response."}), 400
     else:
         print(f"Request failed with status code {response.status_code}")
         print(response.text)
+        return jsonify({"error": f"Request failed with status code {response.status_code}", "details": response.text}), 400
 
 
 def refresh():
