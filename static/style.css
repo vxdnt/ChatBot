@@ -6,10 +6,12 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    overflow: hidden;
+    overflow: hidden; 
+    flex-direction: column; /* Column layout for body */
+    justify-content: flex-start; /* Align items at the top */    
 }
 
-.h3 {
+h3 {
     letter-spacing: -.125rem;
     margin-top: 30px;
     margin-bottom: 30px;
