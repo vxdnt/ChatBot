@@ -2,17 +2,11 @@ from flask import Flask, request, jsonify, render_template
 import re 
 import logging
 import pymongo
-import requests
-import os
-import uuid  # To generate a random UUID for link_id
-import webbrowser  # To open the URL in the default web browser
 from threading import Timer
 from pymongo import ReturnDocument
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from flask import send_from_directory
-
-
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -87,52 +81,6 @@ def home():
 def success():
     return render_template('success.html')
 
-@app.route('/pay', methods=['POST'])
-def run_payment():
-    client_id = os.getenv("X_CLIENT_ID")
-    client_secret = os.getenv("X_CLIENT_SECRET")
-    url = 'https://api.cashfree.com/pg/links'
-    headers = {
-        'accept': 'application/json',
-        'content-type': 'application/json',
-        'x-api-version': '2023-08-01',
-        'x-client-id': client_id,
-        'x-client-secret': client_secret
-    }
-    link_id = str(uuid.uuid4())
-    data = {
-        "customer_details": {
-            "customer_phone": "7715039001"
-        },
-        "link_notify": {
-            "send_sms": True
-        },
-        "link_amount": 5,
-        "link_purpose": "List My Tickets",
-        "link_currency": "INR",
-        "link_id": link_id  # Use the generated random link_id
-    }
-
-    response = requests.post(url, headers=headers, json=data)
-    if response.status_code == 200:
-        print("Request was successful")
-        response_data = response.json()
-        link_url = response_data.get('link_url')  # Update this with the actual field name in the response
-
-        if link_url:
-            # Open the URL in the default web browser
-            webbrowser.open(link_url)
-            # Return the link URL as a response to the request
-            return jsonify({"link_url": link_url}), 200
-        else:
-            print("No link URL found in the response.")
-            return jsonify({"error": "No link URL found in the response."}), 400
-    else:
-        print(f"Request failed with status code {response.status_code}")
-        print(response.text)
-        return jsonify({"error": f"Request failed with status code {response.status_code}", "details": response.text}), 400
-
-
 def refresh():
     global user_state
     user_state = {}
@@ -153,107 +101,117 @@ def webhook():
         return jsonify({"reply": "Invalid user ID."}), 400
 
     if user_id not in user_state:
-        user_state[user_id] = {"step": 1}  # Initialize new user session
+        user_state[user_id] = {"step": 1}
+        user_state[user_id]["step"] = 2  # Step 1: greeting
         logging.info(f"New session started for user_id: {user_id}")
 
-    # Current step in the flow
+    # Handling each step based on user state
     step = user_state[user_id]["step"]
 
-    # Step 1: Greeting
-    if step == 1:
-        user_state[user_id]["step"] = 2  # Move to options
+    if step == 1:  # Greeting
+        user_state[user_id]["step"] = 2  # Step 2: options
         Timer(600, clear_user_state, args=[user_id]).start()  # Clear state after 10 minutes
         return jsonify({"reply": "Hi!! Let me help you.", "options": ["Want to Sell", "Want to Buy"]})
 
-    # Step 2: Options
-    if step == 2:
+    elif step == 2:  # Options
         if "sell" in user_message:
-            user_state[user_id]["step"] = 3  # Ask event for selling
+            user_state[user_id]["step"] = 3  # Step 3: ask_event_sell
             return jsonify({"reply": "Great! You want to sell. Tell me which event it is?"})
         elif "buy" in user_message:
-            user_state[user_id]["step"] = 4  # Ask event for buying
+            user_state[user_id]["step"] = 4  # Step 4: ask_event_buy
             return jsonify({"reply": "Great! You want to buy. Tell me which event you’re interested in?"})
         else:
             return jsonify({"reply": "Please select an option: Want to Sell or Want to Buy."})
 
     # Selling Flow
-    if step == 3:  # Ask event for selling
+    elif step == 3:  # Ask event for selling
         user_state[user_id]["event"] = user_message
-        user_state[user_id]["step"] = 5  # Ask category for selling
+        user_state[user_id]["step"] = 5  # Step 5: ask_category_sell
         return jsonify({"reply": "Got it! What ticket category are you selling, and how many tickets?"})
 
-    if step == 5:  # Ask category for selling
+    elif step == 5:  # Ask category for selling
         user_state[user_id]["category"] = user_message
-        user_state[user_id]["step"] = 6  # Ask price for selling
+        user_state[user_id]["step"] = 6  # Step 6: ask_price_sell
         return jsonify({"reply": "At what price do you want to sell one ticket (per category)?"})
 
-    if step == 6:  # Ask price for selling
+    elif step == 6:  # Ask price for selling
         if not user_message.isdigit():
             return jsonify({"reply": "Please provide a valid numeric price."})
         user_state[user_id]["price"] = int(user_message)
-        user_state[user_id]["step"] = 7  # Ask name for selling
-        return jsonify({"reply": "Got it! Now, may I know your name?"})
+        user_state[user_id]["step"] = 7  # Step 7: ask_name_sell
+        return jsonify({"reply": "Got it! Now, May I know your name?"})
 
-    if step == 7:  # Ask name for selling
+    elif step == 7:  # Ask name for selling
         user_state[user_id]["name"] = user_message
-        user_state[user_id]["step"] = 8  # Ask contact for selling
-        return jsonify({"reply": "Thanks! Can you share your 10-digit mobile number?"})
+        user_state[user_id]["step"] = 8  # Step 8: ask_contact_sell
+        return jsonify({"reply": "Thanks! Can you share your 10 digit mobile number?"})
 
-    if step == 8:  # Ask contact for selling
+    elif step == 8:  # Ask contact for selling
         if not is_valid_phone(user_message):
             return jsonify({"reply": "Please provide a valid phone number."})
         user_state[user_id]["contact"] = user_message
-        user_state[user_id]["step"] = 9  # Ask email for selling
+        user_state[user_id]["step"] = 9  # Step 9: ask_email_sell
         return jsonify({"reply": "Got it! Lastly, please provide your email address."})
 
-    if step == 9:  # Ask email for selling
+    elif step == 9:  # Ask email for selling
         if not is_valid_email(user_message):
             return jsonify({"reply": "That doesn’t look like a valid email. Please try again."})
         user_state[user_id]["email"] = user_message
+        user_state[user_id]["step"] = 10  # Step 10: end_sell
+
         try:
-            save_user_data(user_id)  # Save user data
-        except Exception as e:
-            logging.error(f"Error saving user data: {e}")
-            return jsonify({"reply": "There was an error saving your data. Please try again."}), 500
-        return jsonify({"reply": "Please do the payment to list your tickets on our platform", "options": ["Pay 20"]})
-
-    # Buying Flow
-    if step == 4:  # Ask event for buying
-        user_state[user_id]["event"] = user_message
-        user_state[user_id]["step"] = 11  # Ask name for buying
-        return jsonify({"reply": "We'll check availability for the tickets and notify you. May I know your name?"})
-
-    if step == 11:  # Ask name for buying
-        user_state[user_id]["name"] = user_message
-        user_state[user_id]["step"] = 12  # Ask contact for buying
-        return jsonify({"reply": "Thanks! Can you share your 10-digit mobile number?"})
-
-    if step == 12:  # Ask contact for buying
-        if not is_valid_phone(user_message):
-            return jsonify({"reply": "Please provide a valid phone number."})
-        user_state[user_id]["contact"] = user_message
-        user_state[user_id]["step"] = 13  # Ask email for buying
-        return jsonify({"reply": "Got it! Lastly, please provide your email address."})
-
-    if step == 13:  # Ask email for buying
-        if not is_valid_email(user_message):
-            return jsonify({"reply": "That doesn’t look like a valid email. Please try again."})
-        user_state[user_id]["email"] = user_message
-        try:
-            save_user_data(user_id)  # Save user data
+            save_user_data(user_id)  # Save user data to MongoDB
         except Exception as e:
             logging.error(f"Error saving user data: {e}")
             return jsonify({"reply": "There was an error saving your data. Please try again."}), 500
         return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
 
+        #save_user_data(user_id)  # Save user data to MongoDB
+        #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+
+    # Buying Flow
+    elif step == 4:  # Ask event for buying
+        user_state[user_id]["event"] = user_message
+        user_state[user_id]["step"] = 11  # Step 11: display_prices
+        return jsonify({"reply": "We'll check availability for the tickets and notify you. May I know your name?"})
+    
+    elif step == 11:  # Ask name for selling
+        user_state[user_id]["name"] = user_message
+        user_state[user_id]["step"] = 12  # Step 8: ask_contact_sell
+        return jsonify({"reply": "Thanks! Can you share your 10 digit mobile number?"})
+
+    elif step == 12:  # Ask contact for selling
+        if not is_valid_phone(user_message):
+            return jsonify({"reply": "Please provide a valid phone number."})
+        user_state[user_id]["contact"] = user_message
+        user_state[user_id]["step"] = 13  # Step 9: ask_email_sell
+        return jsonify({"reply": "Got it! Lastly, please provide your email address."})
+
+    elif step == 13:  # Ask email for selling
+        if not is_valid_email(user_message):
+            return jsonify({"reply": "That doesn’t look like a valid email. Please try again."})
+        user_state[user_id]["email"] = user_message
+        user_state[user_id]["step"] = 10  # Step 10: end_sell
+
+        try:
+            save_user_data(user_id)  # Save user data to MongoDB
+        except Exception as e:
+            logging.error(f"Error saving user data: {e}")
+            return jsonify({"reply": "There was an error saving your data. Please try again."}), 500
+        return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+
+        #save_user_data(user_id)  # Save user data to MongoDB
+        #return jsonify({"reply": "Thank you! We’ll let you know via email or WhatsApp. Click 'Start New Chat' to begin again.", "options": ["Start New Chat"]})
+
+
+
     # Restart Chat
-    if step == 10:  # End steps
+    elif step in [10]:  # End steps
         if "start new chat" in user_message:
-            user_state[user_id]["step"] = 2  # Restart at options
+            user_state[user_id]["step"] = 2  # Step 2: options (skip greeting)
             return jsonify({"reply": "Hi!! Let me help you.", "options": ["Want to Sell", "Want to Buy"]})
 
-    # Fallback for unknown steps
-    return jsonify({"reply": "Oops! Something went wrong. Please try refreshing the page."})
+    return jsonify({"reply": "Opps! Looks like an error occurred. Refresh the page."})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
