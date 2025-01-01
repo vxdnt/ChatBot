@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif, Verdana;
     background-color: #f0f0f0;
     display: flex;
     justify-content: center;
@@ -7,6 +7,17 @@ body {
     height: 100vh;
     margin: 0;
     overflow: hidden;
+}
+
+.h3 {
+    letter-spacing: -.125rem;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-family: Arial, Verdana, sans-serif;
+    font-size: 6.75rem;
+    font-weight: 300;
+    line-height: 1;
+    text-align: center;
 }
 
 .chat-container {
