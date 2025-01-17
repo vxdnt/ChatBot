@@ -7,8 +7,7 @@ body {
     height: 100vh;
     margin: 0;
     overflow: hidden; 
-    flex-direction: column; /* Column layout for body */
-    justify-content: flex-start; /* Align items at the top */    
+    flex-direction: column; /* Column layout for body */ 
 }
 
 .chat-container {
