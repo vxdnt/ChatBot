@@ -76,6 +76,10 @@ def refresh():
     global user_state
     user_state = {}
 
+@app.route('/ads.txt')
+def ads_txt():
+    return send_from_directory('.', 'ads.txt')
+
 @app.route("/restart", methods=["GET"])
 def restart():
     global user_state
