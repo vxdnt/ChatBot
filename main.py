@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+from flask import send_from_directory
 import re 
 import logging
 import pymongo
@@ -78,7 +79,11 @@ def refresh():
 
 @app.route('/ads.txt')
 def ads_txt():
-    return send_from_directory('.', 'ads.txt')
+    try:
+        # Serve the ads.txt file from the root directory
+        return send_from_directory('.', 'ads.txt')
+    except Exception as e:
+        return f"Error: {e}", 500
 
 @app.route("/restart", methods=["GET"])
 def restart():
